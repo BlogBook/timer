@@ -3,7 +3,7 @@ import smtplib
 import re
 import time
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
@@ -17,23 +17,24 @@ def email_verify(addressToVerify):
 
     match = re.match(regex, addressToVerify)
     if match == None:
-        # print('Bad Syntax')
-        # raise ValueError('Bad Syntax')
         sec = (time.time() - start_time)
-        return 'Invalid email' + str(sec)
+        return jsonify(status='Invalid email', seconds=str(sec))
 
     splitAddress = addressToVerify.split('@')
     domain = str(splitAddress[1])
-    records = dns.resolver.query(domain, 'MX')
+    try:
+        records = dns.resolver.query(domain, 'MX')
+    except Exception as e:
+        return jsonify(status='Invalid domain')
     mxRecord = records[0].exchange
     mxRecord = str(mxRecord)
     server = smtplib.SMTP()
     server.connect(mxRecord)
-    server.mail(addressToVerify)
+    # server.mail(addressToVerify)
     code, message = server.rcpt(str(addressToVerify))
     server.quit()
     secs = (time.time() - start_time)
-    return 'success'+str(secs)
+    return jsonify(status='success', seconds=str(secs))
 
 
 if __name__ == '__main__':
