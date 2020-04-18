@@ -25,7 +25,8 @@ def email_verify(addressToVerify):
     try:
         records = dns.resolver.query(domain, 'MX')
     except Exception as e:
-        return jsonify(status='Invalid domain')
+        second = (time.time() - start_time)
+        return jsonify(status='Invalid domain', seconds=str(second))
     mxRecord = records[0].exchange
     mxRecord = str(mxRecord)
     server = smtplib.SMTP()
