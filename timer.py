@@ -18,7 +18,7 @@ def email_verify(addressToVerify):
     match = re.match(regex, addressToVerify)
     if match == None:
         sec = (time.time() - start_time)
-        return jsonify(status='Invalid email', seconds=str(sec))
+        return jsonify(status='Invalid Email', processing_time=str(sec))
 
     splitAddress = addressToVerify.split('@')
     domain = str(splitAddress[1])
@@ -32,10 +32,10 @@ def email_verify(addressToVerify):
         code, message = server.rcpt(str(addressToVerify))
         server.quit()
         secs = (time.time() - start_time)
-        return jsonify(status='success', seconds=str(secs))
+        return jsonify(status='Valid Email', processing_time=str(secs))
     except Exception as e:
         second = (time.time() - start_time)
-        return jsonify(status='Invalid domain', seconds=str(second))
+        return jsonify(status='Invalid domain', processing_time=str(second))
 
 
 if __name__ == '__main__':
